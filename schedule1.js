@@ -74,6 +74,73 @@ function startListener() {
             console.log(`[${message.to_id.channel_id}] ${message.message}`)
         }
     });
+
+    mtproto.updates.on('updatesTooLong', ({ updates }) => {
+        console.log(updates);
+        console.log('updatesTooLong');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
+
+    mtproto.updates.on('updateShortMessage', ({ updates }) => {
+        console.log(updates);
+        console.log('updateShortMessage');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
+
+
+    mtproto.updates.on('updateShortChatMessage', ({ updates }) => {
+        console.log(updates);
+        console.log('updateShortChatMessage');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
+
+    mtproto.updates.on('updateShort', ({ updates }) => {
+        console.log(updates);
+        console.log('updateShort');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
+
+    mtproto.updates.on('updatesCombined', ({ updates }) => {
+        console.log(updates);
+        console.log('updatesCombined');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
+
+    mtproto.updates.on('updateShortSentMessage', ({ updates }) => {
+        console.log(updates);
+        console.log('updateShortSentMessage');
+        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
+
+        for (const message of newChannelMessages) {
+            // printing new channel messages
+            console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        }
+    });
 }
 
 function sendCode(phone) {
