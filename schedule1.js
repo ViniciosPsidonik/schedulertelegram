@@ -66,6 +66,7 @@ const mtproto = new MTProto({
 function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', ({ updates }) => {
+        console.log(updates);
         const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
 
         for (const message of newChannelMessages) {
@@ -89,70 +90,73 @@ app.post('/run', (req, res) => {
 
     // The user is not logged in
     console.log('[+] You must log in')
-    console.log('[+] You must log in')
     let phone_number = '+5554991972360'
-    mtproto.call('auth.sendCode', {
-        phone_number: phone_number,
-        settings: {
-            _: 'codeSettings',
+    mtproto.call('users.getFullUser', {
+        id: {
+            _: 'inputUserSelf',
         },
     })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message.includes('_MIGRATE_')) {
-            const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+        .then(startListener) // means the user is logged in -> so start the listener
+        .catch(async error => {
 
-            mtproto.setDefaultDc(+nextDcId);
+            // The user is not logged in
+            console.log('[+] You must log in')
 
-            return sendCode(phone_number);
-        }
-    })
-    .then(async result => {
-        console.log('then1');
-        let codeHere = await getCode()
-        console.log(codeHere);
-        console.log(result);
-        code = undefined
-        return mtproto.call('auth.signIn', {
-            phone_code: codeHere,
-            phone_number: phone_number,
-            phone_code_hash: result.phone_code_hash,
+            mtproto.call('auth.sendCode', {
+                phone_number,
+                settings: {
+                    _: 'codeSettings',
+                },
+            })
+                .catch(error => {
+                    if (error.error_message.includes('_MIGRATE_')) {
+                        const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+
+                        mtproto.setDefaultDc(+nextDcId);
+
+                        return sendCode(phone_number);
+                    }
+                })
+                .then(async result => {
+                    let codeHere = await getCode()
+                    return mtproto.call('auth.signIn', {
+                        phone_code: codeHere,
+                        phone_number: phone_number,
+                        phone_code_hash: result.phone_code_hash,
+                    });
+                })
+                .catch(error => {
+                    if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
+                        return mtproto.call('account.getPassword').then(async result => {
+                            const { srp_id, current_algo, srp_B } = result;
+                            const { salt1, salt2, g, p } = current_algo;
+
+                            const { A, M1 } = await getSRPParams({
+                                g,
+                                p,
+                                salt1,
+                                salt2,
+                                gB: srp_B,
+                                password: await getPassword(),
+                            });
+
+                            return mtproto.call('auth.checkPassword', {
+                                password: {
+                                    _: 'inputCheckPasswordSRP',
+                                    srp_id,
+                                    A,
+                                    M1,
+                                },
+                            });
+                        });
+                    }
+                })
+                .then(result => {
+                    console.log('[+] successfully authenticated');
+                    // start listener since the user has logged in now
+                    startListener()
+                });
         })
-    })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
-            return mtproto.call('account.getPassword').then(async result => {
-                const { srp_id, current_algo, srp_B } = result;
-                const { salt1, salt2, g, p } = current_algo;
-
-                const { A, M1 } = await getSRPParams({
-                    g,
-                    p,
-                    salt1,
-                    salt2,
-                    gB: srp_B,
-                    password: await getPassword(),
-                });
-
-                return mtproto.call('auth.checkPassword', {
-                    password: {
-                        _: 'inputCheckPasswordSRP',
-                        srp_id,
-                        A,
-                        M1,
-                    },
-                });
-            });
-        }
-    })
-    .then(result => {
-        console.log('[+] successfully authenticated');
-        console.log(result);
-        // start listener since the user has logged in now
-        startListener()
-        res.sendStatus(200)
-    });
 })
 
 const PORT = process.env.PORT || 3001
