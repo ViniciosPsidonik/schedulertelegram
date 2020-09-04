@@ -12,6 +12,8 @@
   "dependencies": {
     "@mtproto/core": "3.4.0",
     "axios": "^0.19.2",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "body-parser": "^1.19.0",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
