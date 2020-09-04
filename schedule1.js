@@ -94,6 +94,8 @@ app.post('/run', (req, res) => {
     })
     .then(async result => {
         let codeHere = await getCode()
+        console.log(codeHere);
+        console.log(result);
         code = undefined
         return mtproto.call('auth.signIn', {
             phone_code: codeHere,
@@ -132,6 +134,7 @@ app.post('/run', (req, res) => {
         console.log(result);
         // start listener since the user has logged in now
         startListener()
+        res.send(200)
     });
 })
 
