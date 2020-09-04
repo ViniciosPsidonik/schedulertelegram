@@ -73,74 +73,66 @@ function startListener() {
 
 app.post('/run', (req, res) => {
     console.log('aquii');
-    mtproto
-        .call('users.getFullUser', {
-            id: {
-                _: 'inputUserSelf',
-            },
-        })
-        .then(startListener) // means the user is logged in -> so start the listener
-        .catch(async error => {
-            // The user is not logged in
-            console.log('[+] You must log in')
 
-            mtproto.call('auth.sendCode', {
-                phone_number: '+5554991972360',
-                settings: {
-                    _: 'codeSettings',
-                },
-            })
-                .catch(error => {
-                    if (error.error_message.includes('_MIGRATE_')) {
-                        const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+    // The user is not logged in
+    console.log('[+] You must log in')
 
-                        mtproto.setDefaultDc(+nextDcId);
+    mtproto.call('auth.sendCode', {
+        phone_number: '+5554991972360',
+        settings: {
+            _: 'codeSettings',
+        },
+    })
+    .catch(error => {
+        if (error.error_message.includes('_MIGRATE_')) {
+            const [type, nextDcId] = error.error_message.split('_MIGRATE_');
 
-                        return sendCode(phone_number);
-                    }
-                })
-                .then(async result => {
-                    let codeHere = await getCode()
-                    code = undefined
-                    return mtproto.call('auth.signIn', {
-                        phone_code: codeHere,
-                        phone_number: phone_number,
-                        phone_code_hash: result.phone_code_hash,
-                    });
-                })
-                .catch(error => {
-                    if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
-                        return mtproto.call('account.getPassword').then(async result => {
-                            const { srp_id, current_algo, srp_B } = result;
-                            const { salt1, salt2, g, p } = current_algo;
+            mtproto.setDefaultDc(+nextDcId);
 
-                            const { A, M1 } = await getSRPParams({
-                                g,
-                                p,
-                                salt1,
-                                salt2,
-                                gB: srp_B,
-                                password: await getPassword(),
-                            });
+            return sendCode(phone_number);
+        }
+    })
+    .then(async result => {
+        let codeHere = await getCode()
+        code = undefined
+        return mtproto.call('auth.signIn', {
+            phone_code: codeHere,
+            phone_number: phone_number,
+            phone_code_hash: result.phone_code_hash,
+        });
+    })
+    .catch(error => {
+        if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
+            return mtproto.call('account.getPassword').then(async result => {
+                const { srp_id, current_algo, srp_B } = result;
+                const { salt1, salt2, g, p } = current_algo;
 
-                            return mtproto.call('auth.checkPassword', {
-                                password: {
-                                    _: 'inputCheckPasswordSRP',
-                                    srp_id,
-                                    A,
-                                    M1,
-                                },
-                            });
-                        });
-                    }
-                })
-                .then(result => {
-                    console.log('[+] successfully authenticated');
-                    console.log(result);
-                    // start listener since the user has logged in now
-                    startListener()
+                const { A, M1 } = await getSRPParams({
+                    g,
+                    p,
+                    salt1,
+                    salt2,
+                    gB: srp_B,
+                    password: await getPassword(),
                 });
-        })
+
+                return mtproto.call('auth.checkPassword', {
+                    password: {
+                        _: 'inputCheckPasswordSRP',
+                        srp_id,
+                        A,
+                        M1,
+                    },
+                });
+            });
+        }
+    })
+    .then(result => {
+        console.log('[+] successfully authenticated');
+        console.log(result);
+        // start listener since the user has logged in now
+        startListener()
+    });
 })
 
 const PORT = process.env.PORT || 3001
