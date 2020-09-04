@@ -72,7 +72,6 @@ function startListener() {
 }
 
 app.post('/run', (req, res) => {
-
     console.log('aquii');
     mtproto
         .call('users.getFullUser', {
