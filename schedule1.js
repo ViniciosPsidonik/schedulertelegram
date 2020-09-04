@@ -34,14 +34,18 @@ app.post('/code', (req, res) => {
     let params = req.body
 
     code = params.code
+    res.sendStatus(200)
 })
 
 
 function getCode() {
     return new Promise((resolve) => {
-        if (code) {
-            return resolve(code)
-        }
+        const aaa = setInterval(() => {
+            if (code) {
+                clearInterval(aaa)
+                return resolve(code)
+            }
+        }, 500);
     })
 }
 
@@ -93,63 +97,62 @@ app.post('/run', (req, res) => {
             _: 'codeSettings',
         },
     })
-        .catch(error => {
-            console.log(error);
-            if (error.error_message.includes('_MIGRATE_')) {
-                const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+    .catch(error => {
+        console.log(error);
+        if (error.error_message.includes('_MIGRATE_')) {
+            const [type, nextDcId] = error.error_message.split('_MIGRATE_');
 
-                mtproto.setDefaultDc(+nextDcId);
+            mtproto.setDefaultDc(+nextDcId);
 
-                return sendCode(phone_number);
-            }
+            return sendCode(phone_number);
+        }
+    })
+    .then(async result => {
+        console.log('then1');
+        let codeHere = await getCode()
+        console.log(codeHere);
+        console.log(result);
+        code = undefined
+        return mtproto.call('auth.signIn', {
+            phone_code: codeHere,
+            phone_number: phone_number,
+            phone_code_hash: result.phone_code_hash,
         })
-        .then(async result => {
-            console.log('then1');
-            let codeHere = await getCode()
-            console.log(codeHere);
-            console.log(result);
-            code = undefined
-            mtproto.call('auth.signIn', {
-                phone_code: codeHere,
-                phone_number: phone_number,
-                phone_code_hash: result.phone_code_hash,
-            }).then(async result => {
-                console.log('[+] successfully authenticated');
-                console.log(result);
-                // start listener since the user has logged in now
-                startListener()
-            });
-        })
-        .catch(error => {
-            console.log(error);
-            if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
-                return mtproto.call('account.getPassword').then(async result => {
-                    const { srp_id, current_algo, srp_B } = result;
-                    const { salt1, salt2, g, p } = current_algo;
+    })
+    .catch(error => {
+        console.log(error);
+        if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
+            return mtproto.call('account.getPassword').then(async result => {
+                const { srp_id, current_algo, srp_B } = result;
+                const { salt1, salt2, g, p } = current_algo;
 
-                    const { A, M1 } = await getSRPParams({
-                        g,
-                        p,
-                        salt1,
-                        salt2,
-                        gB: srp_B,
-                        password: await getPassword(),
-                    });
-
-                    return mtproto.call('auth.checkPassword', {
-                        password: {
-                            _: 'inputCheckPasswordSRP',
-                            srp_id,
-                            A,
-                            M1,
-                        },
-                    });
+                const { A, M1 } = await getSRPParams({
+                    g,
+                    p,
+                    salt1,
+                    salt2,
+                    gB: srp_B,
+                    password: await getPassword(),
                 });
-            }
-        })
-        .then(result => {
-            res.sendStatus(200)
-        });
+
+                return mtproto.call('auth.checkPassword', {
+                    password: {
+                        _: 'inputCheckPasswordSRP',
+                        srp_id,
+                        A,
+                        M1,
+                    },
+                });
+            });
+        }
+    })
+    .then(result => {
+        console.log('[+] successfully authenticated');
+        console.log(result);
+        // start listener since the user has logged in now
+        startListener()
+        res.sendStatus(200)
+    });
 })
 
 const PORT = process.env.PORT || 3001
