@@ -72,7 +72,7 @@ function startListener() {
 }
 
 function sendCode(phone) {
-    return api.call('auth.sendCode', {
+    return mtproto.call('auth.sendCode', {
         phone_number: phone,
         settings: {
             _: 'codeSettings',
