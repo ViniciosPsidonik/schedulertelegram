@@ -84,6 +84,7 @@ app.post('/run', (req, res) => {
         },
     })
     .catch(error => {
+        console.log(error);
         if (error.error_message.includes('_MIGRATE_')) {
             const [type, nextDcId] = error.error_message.split('_MIGRATE_');
 
@@ -93,6 +94,7 @@ app.post('/run', (req, res) => {
         }
     })
     .then(async result => {
+        console.log('then1');
         let codeHere = await getCode()
         console.log(codeHere);
         console.log(result);
@@ -104,6 +106,7 @@ app.post('/run', (req, res) => {
         });
     })
     .catch(error => {
+        console.log(error);
         if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
             return mtproto.call('account.getPassword').then(async result => {
                 const { srp_id, current_algo, srp_B } = result;
