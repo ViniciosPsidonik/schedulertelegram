@@ -81,7 +81,6 @@ app.post('/run', (req, res) => {
         })
         .then(startListener) // means the user is logged in -> so start the listener
         .catch(async error => {
-
             // The user is not logged in
             console.log('[+] You must log in')
 
