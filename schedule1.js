@@ -71,6 +71,15 @@ function startListener() {
     });
 }
 
+function sendCode(phone) {
+    return api.call('auth.sendCode', {
+        phone_number: phone,
+        settings: {
+            _: 'codeSettings',
+        },
+    });
+}
+
 app.post('/run', (req, res) => {
     console.log('aquii');
 
@@ -83,62 +92,63 @@ app.post('/run', (req, res) => {
             _: 'codeSettings',
         },
     })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message.includes('_MIGRATE_')) {
-            const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+        .catch(error => {
+            console.log(error);
+            if (error.error_message.includes('_MIGRATE_')) {
+                const [type, nextDcId] = error.error_message.split('_MIGRATE_');
 
-            mtproto.setDefaultDc(+nextDcId);
+                mtproto.setDefaultDc(+nextDcId);
 
-            return sendCode(phone_number);
-        }
-    })
-    .then(async result => {
-        console.log('then1');
-        let codeHere = await getCode()
-        console.log(codeHere);
-        console.log(result);
-        code = undefined
-        return mtproto.call('auth.signIn', {
-            phone_code: codeHere,
-            phone_number: phone_number,
-            phone_code_hash: result.phone_code_hash,
-        });
-    })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
-            return mtproto.call('account.getPassword').then(async result => {
-                const { srp_id, current_algo, srp_B } = result;
-                const { salt1, salt2, g, p } = current_algo;
-
-                const { A, M1 } = await getSRPParams({
-                    g,
-                    p,
-                    salt1,
-                    salt2,
-                    gB: srp_B,
-                    password: await getPassword(),
-                });
-
-                return mtproto.call('auth.checkPassword', {
-                    password: {
-                        _: 'inputCheckPasswordSRP',
-                        srp_id,
-                        A,
-                        M1,
-                    },
-                });
+                return sendCode(phone_number);
+            }
+        })
+        .then(async result => {
+            console.log('then1');
+            let codeHere = await getCode()
+            console.log(codeHere);
+            console.log(result);
+            code = undefined
+            mtproto.call('auth.signIn', {
+                phone_code: codeHere,
+                phone_number: phone_number,
+                phone_code_hash: result.phone_code_hash,
+            }).then(async result => {
+                console.log('[+] successfully authenticated');
+                console.log(result);
+                // start listener since the user has logged in now
+                startListener()
             });
-        }
-    })
-    .then(result => {
-        console.log('[+] successfully authenticated');
-        console.log(result);
-        // start listener since the user has logged in now
-        startListener()
-        res.send(200)
-    });
+        })
+        .catch(error => {
+            console.log(error);
+            if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
+                return mtproto.call('account.getPassword').then(async result => {
+                    const { srp_id, current_algo, srp_B } = result;
+                    const { salt1, salt2, g, p } = current_algo;
+
+                    const { A, M1 } = await getSRPParams({
+                        g,
+                        p,
+                        salt1,
+                        salt2,
+                        gB: srp_B,
+                        password: await getPassword(),
+                    });
+
+                    return mtproto.call('auth.checkPassword', {
+                        password: {
+                            _: 'inputCheckPasswordSRP',
+                            srp_id,
+                            A,
+                            M1,
+                        },
+                    });
+                });
+            }
+        })
+        .then(result => {
+            res.sendStatus(200)
+        });
 })
 
 const PORT = process.env.PORT || 3001
