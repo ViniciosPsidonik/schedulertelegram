@@ -1,0 +1,42 @@
+{
+  "name": "iq1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "iq.js",
+  "scripts": {
+    "start": "node schedule1.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mtproto/core": "3.4.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsdom": "^16.3.0",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
+    "mongoose": "^5.9.25",
+    "node-html-parser": "^1.2.20",
+    "node-telegram-bot-api": "^0.50.0",
+    "pkg": "^4.4.9",
+    "prompts": "^2.3.2",
+    "ramda": "^0.27.1",
+    "readline": "^1.3.0",
+    "telegram-mtproto": "^2.2.2",
+    "ws": "^7.3.1"
+  },
+  "bin": "iq.js",
+  "pkg": {
+    "assets": [
+      "view/**/*"
+    ],
+    "target": [
+      "node7"
+    ]
+  }
+}
