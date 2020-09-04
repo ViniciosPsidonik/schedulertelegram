@@ -65,8 +65,9 @@ const mtproto = new MTProto({
 
 function startListener() {
     console.log('[+] starting listener')
-    mtproto.updates.on('updates', ({ updates }) => {
+    mtproto.updates.on('updates', (update) => {
         console.log(updates);
+        let { updates } = update
         const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
 
         for (const message of newChannelMessages) {
@@ -78,68 +79,32 @@ function startListener() {
     mtproto.updates.on('updatesTooLong', ({ updates }) => {
         console.log(updates);
         console.log('updatesTooLong');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 
-    mtproto.updates.on('updateShortMessage', ({ updates }) => {
+    mtproto.updates.on('updateShortMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 
 
-    mtproto.updates.on('updateShortChatMessage', ({ updates }) => {
+    mtproto.updates.on('updateShortChatMessage', (updates) => {
         console.log(updates);
         console.log('updateShortChatMessage');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 
-    mtproto.updates.on('updateShort', ({ updates }) => {
+    mtproto.updates.on('updateShort', (updates) => {
         console.log(updates);
         console.log('updateShort');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 
-    mtproto.updates.on('updatesCombined', ({ updates }) => {
+    mtproto.updates.on('updatesCombined', (updates) => {
         console.log(updates);
         console.log('updatesCombined');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 
-    mtproto.updates.on('updateShortSentMessage', ({ updates }) => {
+    mtproto.updates.on('updateShortSentMessage', (updates) => {
         console.log(updates);
         console.log('updateShortSentMessage');
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewChannelMessage').map(({ message }) => message) // filter `updateNewChannelMessage` types only and extract the 'message' object
-
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
     });
 }
 
@@ -165,62 +130,62 @@ app.post('/run', (req, res) => {
             _: 'codeSettings',
         },
     })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message.includes('_MIGRATE_')) {
-            const [type, nextDcId] = error.error_message.split('_MIGRATE_');
+        .catch(error => {
+            console.log(error);
+            if (error.error_message.includes('_MIGRATE_')) {
+                const [type, nextDcId] = error.error_message.split('_MIGRATE_');
 
-            mtproto.setDefaultDc(+nextDcId);
+                mtproto.setDefaultDc(+nextDcId);
 
-            return sendCode(phone_number);
-        }
-    })
-    .then(async result => {
-        console.log('then1');
-        let codeHere = await getCode()
-        console.log(codeHere);
-        console.log(result);
-        code = undefined
-        return mtproto.call('auth.signIn', {
-            phone_code: codeHere,
-            phone_number: phone_number,
-            phone_code_hash: result.phone_code_hash,
+                return sendCode(phone_number);
+            }
         })
-    })
-    .catch(error => {
-        console.log(error);
-        if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
-            return mtproto.call('account.getPassword').then(async result => {
-                const { srp_id, current_algo, srp_B } = result;
-                const { salt1, salt2, g, p } = current_algo;
+        .then(async result => {
+            console.log('then1');
+            let codeHere = await getCode()
+            console.log(codeHere);
+            console.log(result);
+            code = undefined
+            return mtproto.call('auth.signIn', {
+                phone_code: codeHere,
+                phone_number: phone_number,
+                phone_code_hash: result.phone_code_hash,
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            if (error.error_message === 'SESSION_PASSWORD_NEEDED') {
+                return mtproto.call('account.getPassword').then(async result => {
+                    const { srp_id, current_algo, srp_B } = result;
+                    const { salt1, salt2, g, p } = current_algo;
 
-                const { A, M1 } = await getSRPParams({
-                    g,
-                    p,
-                    salt1,
-                    salt2,
-                    gB: srp_B,
-                    password: await getPassword(),
-                });
+                    const { A, M1 } = await getSRPParams({
+                        g,
+                        p,
+                        salt1,
+                        salt2,
+                        gB: srp_B,
+                        password: await getPassword(),
+                    });
 
-                return mtproto.call('auth.checkPassword', {
-                    password: {
-                        _: 'inputCheckPasswordSRP',
-                        srp_id,
-                        A,
-                        M1,
-                    },
+                    return mtproto.call('auth.checkPassword', {
+                        password: {
+                            _: 'inputCheckPasswordSRP',
+                            srp_id,
+                            A,
+                            M1,
+                        },
+                    });
                 });
-            });
-        }
-    })
-    .then(result => {
-        console.log('[+] successfully authenticated');
-        console.log(result);
-        // start listener since the user has logged in now
-        startListener()
-        res.sendStatus(200)
-    });
+            }
+        })
+        .then(result => {
+            console.log('[+] successfully authenticated');
+            console.log(result);
+            // start listener since the user has logged in now
+            startListener()
+            res.sendStatus(200)
+        });
 })
 
 const PORT = process.env.PORT || 3001
