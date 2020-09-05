@@ -946,7 +946,7 @@ const getPayout = (type) => {
 }
 
 setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN)
+    if (ws && ws.readyState === WebSocket.OPEN)
         intervalGetPayout()
 }, 5000);
 
