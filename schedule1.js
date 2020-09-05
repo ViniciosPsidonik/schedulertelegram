@@ -924,7 +924,7 @@ const loginAsync = async (ssid) => {
 const doLogin = (ssid) => {
     return new Promise((resolve, reject) => {
         const int = setInterval(() => {
-            if (ws.readyState === WebSocket.OPEN) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
                 if (log)
                     console.log(JSON.stringify({ 'name': 'ssid', 'msg': ssid, "request_id": "" }))
                 ws.send(JSON.stringify({ 'name': 'ssid', 'msg': ssid, "request_id": "" }))
