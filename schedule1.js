@@ -74,7 +74,7 @@ let type = '1'
 let activesStringss = []
 let schedules = []
 
-const scheduleTrades = (msg) => {
+const scheduleTrades = msg => {
     let messagesArray = msg.toString().split('\n')
     console.log(messagesArray);
     if (msg.text.toString() == 'G1' || msg.text.toString() == 'G2') {
@@ -132,7 +132,7 @@ function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
         let { updates } = update
-        console.log(updates);
+        // console.log(updates);
         const newChannelMessages = updates.filter((update) => update._ === 'updateNewMessage').map(({ message }) => scheduleTrades(message)) // filter `updateNewChannelMessage` types only and extract the 'message' object
 
         for (const message of newChannelMessages) {
