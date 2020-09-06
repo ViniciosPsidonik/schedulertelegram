@@ -154,14 +154,14 @@ function startListener() {
     mtproto.updates.on('updateShortMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
-        scheduleTrades(update.message)
+        scheduleTrades(updates.message)
     });
 
 
     mtproto.updates.on('updateShortChatMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
-        scheduleTrades(update.message)
+        scheduleTrades(updates.message)
     });
 
 }
