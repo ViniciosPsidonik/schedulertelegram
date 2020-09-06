@@ -35,6 +35,8 @@ app.post('/config', (req, res) => {
     StopWin = config.StopWin
     conta = config.conta
     otc = config.otc
+    if (config.sessionBalance)
+        sessionBalance = config.sessionBalance
 
     res.sendStatus(200)
 })
