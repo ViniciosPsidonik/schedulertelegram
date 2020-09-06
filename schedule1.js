@@ -34,6 +34,7 @@ app.post('/config', (req, res) => {
     StopLoss = config.StopLoss
     StopWin = config.StopWin
     conta = config.conta
+    otc = config.otc
 
     res.sendStatus(200)
 })
@@ -75,6 +76,7 @@ let frameString = ''
 let type = '1'
 let activesStringss = []
 let schedules = []
+let otc = false
 
 const scheduleTrades = msg => {
     let messagesArray = msg.toString().split('\n')
@@ -96,7 +98,6 @@ const scheduleTrades = msg => {
             if (!messagesArray[index].includes('G1') && !messagesArray[index].includes('G2')) {
                 messagesArray[index] = messagesArray[index] + ';' + galeString
             }
-
             let msgSplited = messagesArray[index].split(';')
             if (type == '1') {
                 messagesArray[index] = ''
@@ -105,6 +106,8 @@ const scheduleTrades = msg => {
                     const element = msgSplited[index1];
                     if (index1 == 2) {
                         messagesArray[index] += element.substring(0, 5) + ';'
+                    } else if(otc && index1 == 1){
+                        messagesArray[index] += element + '-OTC'
                     } else {
                         messagesArray[index] += element + ';'
                     }
