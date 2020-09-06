@@ -106,7 +106,7 @@ const scheduleTrades = msg => {
                     const element = msgSplited[index1];
                     if (index1 == 2) {
                         messagesArray[index] += element.substring(0, 5) + ';'
-                    } else if(otc && index1 == 1){
+                    } else if (otc && index1 == 1) {
                         messagesArray[index] += element + '-OTC;'
                     } else {
                         messagesArray[index] += element + ';'
@@ -143,7 +143,6 @@ function startListener() {
         let { updates } = update
         for (let index = 0; index < updates.length; index++) {
             const update = updates[index];
-            console.log(update);
             if (update && update.message) {
                 const message = update.message.message
                 console.log(message);
@@ -155,12 +154,14 @@ function startListener() {
     mtproto.updates.on('updateShortMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
+        scheduleTrades(update.message)
     });
 
 
     mtproto.updates.on('updateShortChatMessage', (updates) => {
         console.log(updates);
-        console.log('updateShortChatMessage');
+        console.log('updateShortMessage');
+        scheduleTrades(update.message)
     });
 
 }
