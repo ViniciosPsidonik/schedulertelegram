@@ -152,16 +152,16 @@ function startListener() {
         }
     });
 
-    // mtproto.updates.on('updateShortMessage', (updates) => {
-    //     console.log(updates);
-    //     console.log('updateShortMessage');
-    // });
+    mtproto.updates.on('updateShortMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortMessage');
+    });
 
 
-    // mtproto.updates.on('updateShortChatMessage', (updates) => {
-    //     console.log(updates);
-    //     console.log('updateShortChatMessage');
-    // });
+    mtproto.updates.on('updateShortChatMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortChatMessage');
+    });
 
 }
 
