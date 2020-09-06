@@ -373,7 +373,7 @@ const buy = (amount, active_id, direction, expired, type, msg) => {
         }
     }
 
-    // console.log(JSON.stringify(data))
+    console.log(JSON.stringify(data))
     ws.send(JSON.stringify(data))
 }
 
@@ -543,9 +543,9 @@ const onMessage = e => {
                             buy(amount, active, direction, parseInt(moment5), 3)
                         }
 
-                        console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('X'));
-                        console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('X'));
-                        console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('X'));
+                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('HH:mm:ss'));
+                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
+                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('HH:mm:ss'));
 
                         let galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(+3).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(+3).add(timeFrame * 3, 'm').format('X')) : '']
 
