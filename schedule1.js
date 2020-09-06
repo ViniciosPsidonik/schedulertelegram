@@ -132,8 +132,8 @@ function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
         let { updates } = update
-        console.log(updates);
-        const message = updates.message.message
+        // console.log(updates);
+        const message = updates[0].message.message
         console.log(message);
         scheduleTrades(message)
 
