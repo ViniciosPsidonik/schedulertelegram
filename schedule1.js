@@ -132,7 +132,7 @@ function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
         let { updates } = update
-        // console.log(updates);
+        console.log(updates);
         const newChannelMessages = updates.filter((update) => update._ === 'updateNewMessage').map(({ message }) => scheduleTrades(message)) // filter `updateNewChannelMessage` types only and extract the 'message' object
 
         for (const message of newChannelMessages) {
