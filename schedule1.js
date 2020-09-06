@@ -70,7 +70,7 @@ const mtproto = new MTProto({
     api_hash,
 });
 
-let galeString = ''
+let galeString = 'G2'
 let frameString = ''
 let type = '1'
 let activesStringss = []
