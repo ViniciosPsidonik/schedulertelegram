@@ -25,7 +25,19 @@ app.get('/', (req, res) => {
 const api_id = 1537314 // insert api_id here
 const api_hash = '1855b411a187811b71f333d904d725d9'; // insert api_hash here
 
+let config
 let code
+app.post('/config', (req, res) => {
+    let params = req.body
+    config = params
+    amount = config.amount
+    StopLoss = config.StopLoss
+    StopWin = config.StopWin
+    conta = config.conta
+
+    res.sendStatus(200)
+})
+
 app.post('/code', (req, res) => {
     let params = req.body
 
@@ -152,8 +164,8 @@ const loginnnn = () => {
     ws.onerror = onError
     ws.onmessage = onMessage
     axios.post('https://auth.iqoption.com/api/v2/login', {
-        identifier: login,
-        password: password
+        identifier: config.login,
+        password: config.password
     }).then((response) => {
         ssid = response.data.ssid
         console.log(ssid);
