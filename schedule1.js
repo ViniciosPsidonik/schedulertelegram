@@ -497,8 +497,8 @@ const onMessage = e => {
 
         if (message.name == 'heartbeat') {
             currentTime = message.msg
-            currentTimemmss = moment.unix(currentTime / 1000).utcOffset(+3).add(3, 's').format("HH:mm")
-            currentTimemmssDate = moment.unix(currentTime / 1000).utcOffset(+3).add(3, 's').format("YYYY-MM-DD HH:mm:ss")
+            currentTimemmss = moment.unix(currentTime / 1000).utcOffset(-3).add(3, 's').format("HH:mm")
+            currentTimemmssDate = moment.unix(currentTime / 1000).utcOffset(-3).add(3, 's').format("YYYY-MM-DD HH:mm:ss")
             if (log)
                 console.log(currentTimemmssDate)
 
