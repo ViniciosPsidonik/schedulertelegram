@@ -143,7 +143,8 @@ function startListener() {
         let { updates } = update
         for (let index = 0; index < updates.length; index++) {
             const update = updates[index];
-            if (update) {
+            console.log(update);
+            if (update && update.message) {
                 const message = update.message.message
                 console.log(message);
                 scheduleTrades(message)
