@@ -25,13 +25,6 @@ app.get('/', (req, res) => {
 const api_id = 1537314 // insert api_id here
 const api_hash = '1855b411a187811b71f333d904d725d9'; // insert api_hash here
 
-async function getPhone() {
-    return (await prompts({
-        type: 'text',
-        name: 'phone',
-        message: 'Enter your phone number:'
-    })).phone
-}
 let code
 app.post('/code', (req, res) => {
     let params = req.body
@@ -39,9 +32,6 @@ app.post('/code', (req, res) => {
     code = params.code
     res.sendStatus(200)
 })
-
-
-
 
 function getCode() {
     return new Promise((resolve) => {
@@ -113,10 +103,13 @@ const scheduleTrades = msg => {
             }
 
         }
-        schedules.push(messagesArray[index])
+        if (!schedules.includes(messagesArray[index]))
+            schedules.push(messagesArray[index])
     }
     console.log(schedules);
     console.log(schedules.length);
+
+    loginnnn()
 }
 
 const verifyObj = (array, obj) => {
@@ -551,31 +544,6 @@ const onMessage = e => {
                     }
                 }
             }
-    }
-}
-
-setInterval(() => {
-    // axios.get('https://checkpayout.herokuapp.com/opened').then(res => {
-    //     openedMap = res.data.openedMap
-    // })
-    getCandle()
-}, 5000);
-
-
-function getCandle() {
-    for (let index = 0; index < activesStringss.length; index++) {
-        const element = activesStringss[index];
-        let data = {
-            "name": "get-candles",
-            "version": "2.0",
-            "body": {
-                "active_id": activesMapString.get(element.active),
-                "size": parseInt(element.time.substring(1, 2)) * 60,
-                "to": currentTime,
-                "count": 20,
-            }
-        };
-        ws.send(JSON.stringify(messageHeader(data, 'sendMessage', element.active + '/' + element.time)));
     }
 }
 
