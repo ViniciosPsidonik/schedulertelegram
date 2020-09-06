@@ -92,7 +92,6 @@ const scheduleTrades = msg => {
         }
 
         if (messagesArray[index] == '' || !messagesArray[index].includes('PUT') && !messagesArray[index].includes('CALL')) {
-            console.log(messagesArray[index]);
             messagesArray.splice(index, 1);
             index--
             continue
