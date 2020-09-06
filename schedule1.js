@@ -121,7 +121,8 @@ const scheduleTrades = msg => {
     console.log(schedules);
     console.log(schedules.length);
 
-    loginnnn()
+    if (!ws)
+        loginnnn()
 }
 
 const verifyObj = (array, obj) => {
@@ -139,9 +140,11 @@ function startListener() {
         let { updates } = update
         for (let index = 0; index < updates.length; index++) {
             const update = updates[index];
-            const message = update.message.message
-            console.log(message);
-            scheduleTrades(message)
+            if (update) {
+                const message = update.message.message
+                console.log(message);
+                scheduleTrades(message)
+            }
         }
     });
 
@@ -171,6 +174,7 @@ const loginnnn = () => {
         console.log(ssid);
         loginAsync(ssid)
     }).catch(function (err) {
+        console.log(err);
         if (err)
             console.log('Erro ao se conectar... Tente novamente')
     })
@@ -413,6 +417,7 @@ const onMessage = e => {
             console.log('Stop Win Alcançado...')
             ws.terminate()
             schedules = []
+            ws = null
         }
 
         if (buyUsersIds.includes(message.request_id)) {
@@ -428,6 +433,7 @@ const onMessage = e => {
             console.log('Stop Loss Alcançado...')
             ws.terminate()
             schedules = []
+            ws = null
         }
 
         if (message.name == 'profile' && message.msg) {
