@@ -513,7 +513,7 @@ const onMessage = e => {
                         const timeFrame = parseInt(schedulesArray[0].substring(1, 2))
                         const active = activesMapString.has(schedulesArray[1]) ? activesMapString.get(schedulesArray[1]) : activesMapString.get(schedulesArray[2])
                         const direction = schedulesArray[3].toLowerCase()
-                        const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('X')
+                        const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(-3).add(timeFrame, 'm').format('X')
                         const gale = schedulesArray[4].substring(1, 2)
 
                         let turboPayout
@@ -547,7 +547,7 @@ const onMessage = e => {
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('HH:mm:ss'));
 
-                        let galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(+3).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(+3).add(timeFrame * 3, 'm').format('X')) : '']
+                        let galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(-3).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(-3).add(timeFrame * 3, 'm').format('X')) : '']
 
                         buysss.push({
                             id: `${active}/${moment5}`,
