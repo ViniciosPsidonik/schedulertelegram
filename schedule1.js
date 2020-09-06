@@ -373,7 +373,6 @@ const buy = (amount, active_id, direction, expired, type, msg) => {
         }
     }
 
-    console.log(JSON.stringify(data))
     ws.send(JSON.stringify(data))
 }
 
