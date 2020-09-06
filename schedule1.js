@@ -133,12 +133,14 @@ function startListener() {
     mtproto.updates.on('updates', (update) => {
         let { updates } = update
         console.log(updates);
-        const newChannelMessages = updates.filter((update) => update._ === 'updateNewMessage').map(({ message }) => scheduleTrades(message)) // filter `updateNewChannelMessage` types only and extract the 'message' object
+        const message = updates.message.message
+        console.log(message);
+        scheduleTrades(message)
 
-        for (const message of newChannelMessages) {
-            // printing new channel messages
-            console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        }
+        // for (const message of newChannelMessages) {
+        //     // printing new channel messages
+        //     console.log(`[${message.to_id.channel_id}] ${message.message}`)
+        // }
     });
 
     mtproto.updates.on('updateShortMessage', (updates) => {
