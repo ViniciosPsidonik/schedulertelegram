@@ -107,7 +107,7 @@ const scheduleTrades = msg => {
                     if (index1 == 2) {
                         messagesArray[index] += element.substring(0, 5) + ';'
                     } else if(otc && index1 == 1){
-                        messagesArray[index] += element + '-OTC'
+                        messagesArray[index] += element + '-OTC;'
                     } else {
                         messagesArray[index] += element + ';'
                     }
