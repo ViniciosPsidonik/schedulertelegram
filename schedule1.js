@@ -77,52 +77,43 @@ let schedules = []
 const scheduleTrades = msg => {
     let messagesArray = msg.toString().split('\n')
     console.log(messagesArray);
-    if (msg.text.toString() == 'G1' || msg.text.toString() == 'G2') {
-        galeString = msg.text.toString()
-    } else if (msg.text.toString() == 'M1' || msg.text.toString() == 'M5' || msg.text.toString() == 'M15') {
-        frameString = msg.text.toString()
-    } else if (msg.text.toString() == '1' || msg.text.toString() == '2') {
-        type = msg.text.toString()
-    } else {
 
-        for (let index = 0; index < messagesArray.length; index++) {
-            messagesArray[index] = messagesArray[index].replace(',', ';')
-            messagesArray[index] = messagesArray[index].replace(',', ';')
-            if (!messagesArray[index].includes('M1') && !messagesArray[index].includes('M5') && !messagesArray[index].includes('M15')) {
-                messagesArray[index] = frameString + ';' + messagesArray[index]
+    for (let index = 0; index < messagesArray.length; index++) {
+        messagesArray[index] = messagesArray[index].replace(',', ';')
+        messagesArray[index] = messagesArray[index].replace(',', ';')
+        if (!messagesArray[index].includes('M1') && !messagesArray[index].includes('M5') && !messagesArray[index].includes('M15')) {
+            messagesArray[index] = frameString + ';' + messagesArray[index]
+        }
+
+        if (messagesArray[index] == '' || !messagesArray[index].includes('PUT') && !messagesArray[index].includes('CALL')) {
+            console.log(messagesArray[index]);
+            messagesArray.splice(index, 1);
+            index--
+            continue
+        } else {
+            if (!messagesArray[index].includes('G1') && !messagesArray[index].includes('G2')) {
+                messagesArray[index] = messagesArray[index] + ';' + galeString
             }
 
-            if (messagesArray[index] == '' || !messagesArray[index].includes('PUT') && !messagesArray[index].includes('CALL')) {
-                console.log(messagesArray[index]);
-                messagesArray.splice(index, 1);
-                index--
-                continue
-            } else {
-                if (!messagesArray[index].includes('G1') && !messagesArray[index].includes('G2')) {
-                    messagesArray[index] = messagesArray[index] + ';' + galeString
-                }
-
-                let msgSplited = messagesArray[index].split(';')
-                if (type == '1') {
-                    messagesArray[index] = ''
-                    msgSplited[2] = msgSplited[2].replace(';', ':')
-                    for (let index1 = 0; index1 < msgSplited.length; index1++) {
-                        const element = msgSplited[index1];
-                        if (index1 == 2) {
-                            messagesArray[index] += element.substring(0, 5) + ';'
-                        } else {
-                            messagesArray[index] += element + ';'
-                        }
+            let msgSplited = messagesArray[index].split(';')
+            if (type == '1') {
+                messagesArray[index] = ''
+                msgSplited[2] = msgSplited[2].replace(';', ':')
+                for (let index1 = 0; index1 < msgSplited.length; index1++) {
+                    const element = msgSplited[index1];
+                    if (index1 == 2) {
+                        messagesArray[index] += element.substring(0, 5) + ';'
+                    } else {
+                        messagesArray[index] += element + ';'
                     }
                 }
-                if (!verifyObj(activesStringss, { time: msgSplited[0], active: msgSplited[1] })) {
-                    activesStringss.push({ time: msgSplited[0], active: msgSplited[1] })
-                }
-
             }
-            schedules.push(messagesArray[index])
+            if (!verifyObj(activesStringss, { time: msgSplited[0], active: msgSplited[1] })) {
+                activesStringss.push({ time: msgSplited[0], active: msgSplited[1] })
+            }
+
         }
-        // getCandle()
+        schedules.push(messagesArray[index])
     }
     console.log(schedules);
     console.log(schedules.length);
@@ -132,27 +123,24 @@ function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
         let { updates } = update
-        // console.log(updates);
-        const message = updates[0].message.message
-        console.log(message);
-        scheduleTrades(message)
-
-        // for (const message of newChannelMessages) {
-        //     // printing new channel messages
-        //     console.log(`[${message.to_id.channel_id}] ${message.message}`)
-        // }
+        for (let index = 0; index < updates.length; index++) {
+            const update = updates[index];
+            const message = update.message.message
+            console.log(message);
+            scheduleTrades(message)
+        }
     });
 
-    mtproto.updates.on('updateShortMessage', (updates) => {
-        console.log(updates);
-        console.log('updateShortMessage');
-    });
+    // mtproto.updates.on('updateShortMessage', (updates) => {
+    //     console.log(updates);
+    //     console.log('updateShortMessage');
+    // });
 
 
-    mtproto.updates.on('updateShortChatMessage', (updates) => {
-        console.log(updates);
-        console.log('updateShortChatMessage');
-    });
+    // mtproto.updates.on('updateShortChatMessage', (updates) => {
+    //     console.log(updates);
+    //     console.log('updateShortChatMessage');
+    // });
 
 }
 
