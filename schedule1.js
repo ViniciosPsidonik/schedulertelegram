@@ -119,6 +119,15 @@ const scheduleTrades = msg => {
     console.log(schedules.length);
 }
 
+const verifyObj = (array, obj) => {
+    for (let index = 0; index < array.length; index++) {
+        const element = array[index];
+        if (element.time && element.time == obj.time && element.active && element.active == obj.active)
+            return true
+    }
+    return false
+}
+
 function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
