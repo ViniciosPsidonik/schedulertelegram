@@ -161,7 +161,7 @@ function startListener() {
 
     mtproto.updates.on('updateShortChatMessage', (updates) => {
         console.log(updates);
-        console.log('updateShortMessage');
+        console.log('updateShortChatMessage');
         scheduleTrades(updates.message)
     });
 
