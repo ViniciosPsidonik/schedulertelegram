@@ -412,7 +412,7 @@ let currentTimemmss
 let buysss = []
 
 const onMessage = e => {
-    if (ws.readyState === WebSocket.OPEN) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
         const message = JSON.parse(e.data)
 
         if (logg && message.name != 'instrument-quotes-generated' && message.name != 'api_option_init_all_result')
@@ -450,7 +450,7 @@ const onMessage = e => {
         if (message.name == 'option' && message.status != 0) {
             const active = message.request_id.split('/')[0]
             buysCount.set(parseInt(active), buysCount.get(parseInt(active)) - 1)
-            console.log(`Erro ao comprar -> ${getActiveString(`${active}`, activesMapString)}`.red)
+            console.log(`Erro ao comprar -> ${getActiveString(`${active}`, activesMapString)}`)
             console.log('RES = ' + e.data)
             if (soros)
                 positionOpenedSoros = false
@@ -461,7 +461,7 @@ const onMessage = e => {
         if (message.name == 'digital-option-placed' && message.status != 2000) {
             const active = message.request_id.split('/')[0]
             buysCount.set(parseInt(active), buysCount.get(parseInt(active)) - 1)
-            console.log(`Erro ao comprar -> ${getActiveString(`${active}`, activesMapString)}`.red)
+            console.log(`Erro ao comprar -> ${getActiveString(`${active}`, activesMapString)}`)
             console.log('RES = ' + e.data)
             if (soros)
                 positionOpenedSoros = false
@@ -533,17 +533,17 @@ const onMessage = e => {
 
                         console.log(`M${timeFrame} / ${direction} / ${activesMapString.has(schedulesArray[1]) ? schedulesArray[1] : schedulesArray[2]} / ${amount} / ${currentTimemmssDate}`);
 
-                        if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
+                        // if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
                             buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
-                        } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        } else if (turboPayout) {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        } else if (digitalPayout) {
-                            buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
-                        } else {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        }
+                        // } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
+                        //     buy(amount, active, direction, parseInt(moment5), 3)
+                        // } else if (turboPayout) {
+                        //     buy(amount, active, direction, parseInt(moment5), 3)
+                        // } else if (digitalPayout) {
+                        //     buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
+                        // } else {
+                        //     buy(amount, active, direction, parseInt(moment5), 3)
+                        // }
 
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('HH:mm:ss'));
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
