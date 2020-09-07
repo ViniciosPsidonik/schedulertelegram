@@ -532,8 +532,11 @@ const onMessage = e => {
                         }
 
                         console.log(`M${timeFrame} / ${direction} / ${activesMapString.has(schedulesArray[1]) ? schedulesArray[1] : schedulesArray[2]} / ${amount} / ${currentTimemmssDate}`);
-
+                        
+                        let galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('X')) : '']
+                        
                         // if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
+                            galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(-3).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(-3).add(timeFrame * 3, 'm').format('X')) : '']
                             buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
                         // } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
                         //     buy(amount, active, direction, parseInt(moment5), 3)
@@ -549,7 +552,6 @@ const onMessage = e => {
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
                         // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('HH:mm:ss'));
 
-                        let galeTime = [parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('X')), gale && gale.includes('2') ? parseInt(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('X')) : '']
 
                         buysss.push({
                             id: `${active}/${moment5}`,
