@@ -169,6 +169,34 @@ function startListener() {
             scheduleTrades(updates.message)
     });
 
+    mtproto.updates.on('updateShort', (updates) => {
+        console.log(updates);
+        console.log('updateShort');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
+
+    mtproto.updates.on('updatesTooLong', (updates) => {
+        console.log(updates);
+        console.log('updatesTooLong');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
+
+    mtproto.updates.on('updatesCombined', (updates) => {
+        console.log(updates);
+        console.log('updatesCombined');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
+
+    mtproto.updates.on('updateShortSentMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortSentMessage');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
+
 }
 
 const loginnnn = () => {
