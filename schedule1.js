@@ -169,13 +169,6 @@ function startListener() {
             scheduleTrades(updates.message)
     });
 
-    mtproto.updates.on('updateShort', (updates) => {
-        console.log(updates);
-        console.log('updateShort');
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
-
     mtproto.updates.on('updatesTooLong', (updates) => {
         console.log(updates);
         console.log('updatesTooLong');
