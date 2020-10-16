@@ -192,9 +192,9 @@ function startListener() {
 
 }
 
-setInterval(() => {
-    startListener()
-}, 1500000);
+// setInterval(() => {
+//     startListener()
+// }, 1500000);
 
 const loginnnn = () => {
     ws = new WebSocket(url)
