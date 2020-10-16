@@ -511,7 +511,7 @@ const onMessage = e => {
                     if (currentTimemmss && currentTimemmss.includes(hourmm)) {
                         const timeFrame = getTimeFrame(element)
                         const active = getActiveFor(element)
-                        const direction = getDirection(element)
+                        const direction = getDirection(element).toLowerCase()
                         const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').add(3, 'h').format('X')
 
                         let turboPayout
@@ -526,8 +526,9 @@ const onMessage = e => {
                                 digitalPayout = payoutMap.get('digital').get(active)
                             }
                         }
+                        getActiveString
 
-                        console.log(`M${timeFrame} / ${direction} / ${activesMapString.has(schedulesArray[1]) ? schedulesArray[1] : schedulesArray[2]} / ${amount} / ${currentTimemmssDate}`);
+                        console.log(`M${timeFrame} / ${direction} / ${getActiveString(active)} / ${amount} / ${currentTimemmssDate}`);
 
                         if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
                             buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
