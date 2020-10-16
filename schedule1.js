@@ -576,21 +576,11 @@ const getDirection = (msg) => {
 
 const getTimeFrame = (msg) => {
     if(msg.toUpperCase().includes('M15')){
-        return '15'
+        return 15
     } else if(msg.toUpperCase().includes('M5')){
-        return '5'
+        return 5
     } else {
-        return '1'
-    }
-}
-
-const getTimeFrame = (msg) => {
-    if(msg.toUpperCase().includes('M15')){
-        return 'M15'
-    } else if(msg.toUpperCase().includes('M5')){
-        return 'M5'
-    } else {
-        return 'M1'
+        return 1
     }
 }
 
@@ -601,9 +591,6 @@ const getActiveFor = (msg) => {
         } 
     }
 }
-
-
-
 
 function optionClosed(message) {
 
