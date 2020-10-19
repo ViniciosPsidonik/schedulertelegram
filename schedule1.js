@@ -120,6 +120,7 @@ function startListener() {
     mtproto.updates.on('updateShortMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
+        
         if (!stopp)
             scheduleTrades(updates.message)
     });
