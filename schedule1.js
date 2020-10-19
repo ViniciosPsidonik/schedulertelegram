@@ -82,16 +82,18 @@ let schedules = []
 let otc = false
 
 const scheduleTrades = msg => {
-    let messagesArray = msg.toString()
-    if(messagesArray.toUpperCase().includes('PUT') || messagesArray.toUpperCase().includes('CALL')){
-        schedules.push(messagesArray)
-        console.log(schedules);
-        console.log(schedules.length);
+    if (msg) {
+        let messagesArray = msg.toString()
+        if (messagesArray.toUpperCase().includes('PUT') || messagesArray.toUpperCase().includes('CALL')) {
+            schedules.push(messagesArray)
+            console.log(schedules);
+            console.log(schedules.length);
+        }
+
+
+        if (!ws)
+            loginnnn()
     }
-
-
-    if (!ws)
-        loginnnn()
 }
 
 const verifyObj = (array, obj) => {
@@ -117,10 +119,11 @@ function startListener() {
             }
         }
     });
+
     mtproto.updates.on('updateShortMessage', (updates) => {
         console.log(updates);
         console.log('updateShortMessage');
-        
+
         if (!stopp)
             scheduleTrades(updates.message)
     });
@@ -568,7 +571,7 @@ const onMessage = e => {
 }
 
 const getDirection = (msg) => {
-    if(msg.toUpperCase().includes('CALL')){
+    if (msg.toUpperCase().includes('CALL')) {
         return 'CALL'
     } else {
         return 'PUT'
@@ -576,9 +579,9 @@ const getDirection = (msg) => {
 }
 
 const getTimeFrame = (msg) => {
-    if(msg.toUpperCase().includes('M15')){
+    if (msg.toUpperCase().includes('M15')) {
         return 15
-    } else if(msg.toUpperCase().includes('M5')){
+    } else if (msg.toUpperCase().includes('M5')) {
         return 5
     } else {
         return 1
@@ -587,9 +590,9 @@ const getTimeFrame = (msg) => {
 
 const getActiveFor = (msg) => {
     for (var [key, value] of activesMapString) {
-        if(msg.toUpperCase().includes(key)){
+        if (msg.toUpperCase().includes(key)) {
             return value
-        } 
+        }
     }
 }
 
@@ -632,7 +635,7 @@ function optionClosed(message) {
                     console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
 
             } else {
-                winsCount ++
+                winsCount++
                 amount = message.msg.profit_amount
                 console.log(amount);
                 buysss.splice(index, 1);
@@ -641,8 +644,8 @@ function optionClosed(message) {
                     console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
                 else
                     console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-                
-                if(winsCount >= 2){
+
+                if (winsCount >= 2) {
                     stopp = true
                 }
 
@@ -681,14 +684,14 @@ function positionChangedStuff(message) {
 
                 } else {
                     amount = message.msg.close_profit
-                    winsCount ++
+                    winsCount++
                     buysss.splice(index, 1);
                     index--
                     if (profitAmount < 0)
                         console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
                     else
                         console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
-                    if(winsCount >= 2){
+                    if (winsCount >= 2) {
                         stopp = true
                     }
 
