@@ -90,7 +90,6 @@ const scheduleTrades = msg => {
             console.log(schedules.length);
         }
 
-
         if (!ws)
             loginnnn()
     }
