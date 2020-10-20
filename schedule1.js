@@ -507,7 +507,6 @@ const onMessage = e => {
             for (let index = 0; index < schedules.length; index++) {
                 const element = schedules[index]
                 if (element) {
-                    let schedulesArray = element.split(';')
                     let hourmm = element.substring(element.length - 5, element.length)
                     console.log(hourmm);
                     if (currentTimemmss && currentTimemmss.includes(hourmm)) {
@@ -515,51 +514,51 @@ const onMessage = e => {
                         const active = getActiveFor(element)
                         const direction = getDirection(element).toLowerCase()
                         const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').add(3, 'h').format('X')
-
-                        let turboPayout
-                        let digitalPayout
-                        if (payoutMap.has('turbo')) {
-                            if (payoutMap.get('turbo').has(active)) {
-                                turboPayout = payoutMap.get('turbo').get(active)
+                        if (timeFrame && active && direction && moment5) {
+                            let turboPayout
+                            let digitalPayout
+                            if (payoutMap.has('turbo')) {
+                                if (payoutMap.get('turbo').has(active)) {
+                                    turboPayout = payoutMap.get('turbo').get(active)
+                                }
                             }
-                        }
-                        if (payoutMap.has('digital')) {
-                            if (payoutMap.get('digital').has(active)) {
-                                digitalPayout = payoutMap.get('digital').get(active)
+                            if (payoutMap.has('digital')) {
+                                if (payoutMap.get('digital').has(active)) {
+                                    digitalPayout = payoutMap.get('digital').get(active)
+                                }
                             }
+
+                            console.log(`M${timeFrame} / ${direction} / ${getActiveString(active)} / ${amount} / ${currentTimemmssDate}`);
+
+                            if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
+                                buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
+                            } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
+                                buy(amount, active, direction, parseInt(moment5), 3)
+                            } else if (turboPayout) {
+                                buy(amount, active, direction, parseInt(moment5), 3)
+                            } else if (digitalPayout) {
+                                buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
+                            } else {
+                                buy(amount, active, direction, parseInt(moment5), 3)
+                            }
+
+                            // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('HH:mm:ss'));
+                            // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
+                            // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('HH:mm:ss'));
+
+
+                            buysss.push({
+                                id: `${active}/${moment5}`,
+                                amount,
+                                direction,
+                                active,
+                                lossAmount: 0,
+                                timeFrame
+                            })
+                            // } else {
+                            //     console.log('CT operação cancelada...');
+                            // }
                         }
-                        getActiveString
-
-                        console.log(`M${timeFrame} / ${direction} / ${getActiveString(active)} / ${amount} / ${currentTimemmssDate}`);
-
-                        if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
-                            buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
-                        } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        } else if (turboPayout) {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        } else if (digitalPayout) {
-                            buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
-                        } else {
-                            buy(amount, active, direction, parseInt(moment5), 3)
-                        }
-
-                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').format('HH:mm:ss'));
-                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 2, 'm').format('HH:mm:ss'));
-                        // console.log(moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame * 3, 'm').format('HH:mm:ss'));
-
-
-                        buysss.push({
-                            id: `${active}/${moment5}`,
-                            amount,
-                            direction,
-                            active,
-                            lossAmount: 0,
-                            timeFrame
-                        })
-                        // } else {
-                        //     console.log('CT operação cancelada...');
-                        // }
                         schedules.splice(index, 1);
                         index--
                     }
