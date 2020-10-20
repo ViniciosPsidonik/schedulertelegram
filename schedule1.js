@@ -528,7 +528,7 @@ const onMessage = e => {
                                 }
                             }
 
-                            console.log(`M${timeFrame} / ${direction} / ${getActiveString(active)} / ${amount} / ${currentTimemmssDate}`);
+                            console.log(`M${timeFrame} / ${direction} / ${getActiveString(active, activesMapString)} / ${amount} / ${currentTimemmssDate}`);
 
                             if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
                                 buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
