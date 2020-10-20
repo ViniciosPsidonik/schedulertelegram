@@ -80,7 +80,6 @@ let type = '1'
 let activesStringss = []
 let schedules = []
 let otc = false
-
 const scheduleTrades = msg => {
     if (msg) {
         let messagesArray = msg.toString()
