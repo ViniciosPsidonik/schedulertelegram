@@ -109,6 +109,7 @@ function startListener() {
         let { updates } = update
         for (let index = 0; index < updates.length; index++) {
             const update = updates[index];
+            console.log(updates);
             if (update && update.message) {
                 const message = update.message.message
                 console.log(message);
@@ -118,42 +119,44 @@ function startListener() {
         }
     });
 
-    mtproto.updates.on('updateShortMessage', (updates) => {
-        console.log(updates);
-        console.log('updateShortMessage');
+    // mtproto.channels
 
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
+    // mtproto.updates.on('updateShortMessage', (updates) => {
+    //     console.log(updates);
+    //     console.log('updateShortMessage');
+
+    //     if (!stopp)
+    //         scheduleTrades(updates.message)
+    // });
 
 
-    mtproto.updates.on('updateShortChatMessage', (updates) => {
-        console.log(updates);
-        console.log('updateShortChatMessage');
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
+    // mtproto.updates.on('updateShortChatMessage', (updates) => {
+    //     console.log(updates);
+    //     console.log('updateShortChatMessage');
+    //     if (!stopp)
+    //         scheduleTrades(updates.message)
+    // });
 
-    mtproto.updates.on('updatesTooLong', (updates) => {
-        console.log(updates);
-        console.log('updatesTooLong');
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
+    // mtproto.updates.on('updatesTooLong', (updates) => {
+    //     console.log(updates);
+    //     console.log('updatesTooLong');
+    //     if (!stopp)
+    //         scheduleTrades(updates.message)
+    // });
 
-    mtproto.updates.on('updatesCombined', (updates) => {
-        console.log(updates);
-        console.log('updatesCombined');
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
+    // mtproto.updates.on('updatesCombined', (updates) => {
+    //     console.log(updates);
+    //     console.log('updatesCombined');
+    //     if (!stopp)
+    //         scheduleTrades(updates.message)
+    // });
 
-    mtproto.updates.on('updateShortSentMessage', (updates) => {
-        console.log(updates);
-        console.log('updateShortSentMessage');
-        if (!stopp)
-            scheduleTrades(updates.message)
-    });
+    // mtproto.updates.on('updateShortSentMessage', (updates) => {
+    //     console.log(updates);
+    //     console.log('updateShortSentMessage');
+    //     if (!stopp)
+    //         scheduleTrades(updates.message)
+    // });
 
 }
 
@@ -508,7 +511,7 @@ const onMessage = e => {
                 const element = schedules[index]
                 if (element) {
                     let hourmm = element.substring(element.length - 5, element.length)
-                    console.log(hourmm);
+                    // console.log(hourmm);
                     if (currentTimemmss && currentTimemmss.includes(hourmm)) {
                         const timeFrame = getTimeFrame(element)
                         const active = getActiveFor(element)
