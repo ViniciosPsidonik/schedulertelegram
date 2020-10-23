@@ -119,7 +119,7 @@ function startListener() {
         }
     });
 
-    // mtproto.channels
+    console.log(mtproto.channels);
 
     // mtproto.updates.on('updateShortMessage', (updates) => {
     //     console.log(updates);
