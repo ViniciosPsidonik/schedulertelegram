@@ -561,7 +561,7 @@ const onMessage = e => {
                         const active = element.parInt
                         const direction = element.direction
                         const timeFrame = 5
-                        const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').add(3, 'h').format('X')
+                        const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').add(3, 'h').subtract(2,'days').format('X')
                         if (timeFrame && active && direction && moment5) {
                             let turboPayout
                             let digitalPayout
