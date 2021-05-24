@@ -110,7 +110,7 @@ const scheduleTrades = msg => {
     
                 for (let index = 0; index < element.length; index++) {
                     const element1 = element[index];
-                    if(element1.includes(':')){
+                    if(element1.includes('Sinais para as ') && element1.includes(':')){
                         time = element1.replace('h','')
                         break
                     }
