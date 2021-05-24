@@ -89,7 +89,7 @@ const scheduleTrades = msg => {
             let time
             let parInt
 
-            if(msg.includes('PUT')){
+            if (msg.includes('PUT')) {
                 direction = 'put'
             } else {
                 direction = 'call'
@@ -97,23 +97,27 @@ const scheduleTrades = msg => {
 
 
             for (var [key, value] of activesMapString.entries()) {
-                if(messagesArray.replace('/', '').includes(key)){
+                if (messagesArray.replace('/', '').includes(key)) {
                     parInt = value
                 }
             }
-            
+
             let msgSpace = messagesArray.split('\n')
             for (let index1 = 0; index1 < msgSpace.length; index1++) {
-                const element = msgSpace[index1].replace('\n','').split(' ');
-                
-                console.log(element);
-    
+                const element = msgSpace[index1].replace('\n', '').split(' ');
+
+                // console.log(element);n
+
+                let achou = false
+
                 for (let index = 0; index < element.length; index++) {
                     const element1 = element[index];
-                    if(element1.includes('Sinais para as ') && element1.includes(':')){
-                        time = element1.replace('h','')
+                    if (achou && element1.includes(':')) {
+                        time = element1.replace('h', '')
                         break
                     }
+                    if (element1 == 'Sinais')
+                        achou = true
                 }
             }
 
@@ -651,17 +655,17 @@ function optionClosed(message) {
         console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`.red)
         notify('Loss', `${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`);
 
-            if (gale)
-                if (amount == amountInitial) {
-                    // if (!galePut.includes(active)) {
-                    amount *= 2
-                } else {
-                    amount = amountInitial
-                }
-            // } else {
-            //     let index = galePut.indexOf(parseInt(active))
-            //     galePut.splice(index, 1)
-            // }
+        if (gale)
+            if (amount == amountInitial) {
+                // if (!galePut.includes(active)) {
+                amount *= 2
+            } else {
+                amount = amountInitial
+            }
+        // } else {
+        //     let index = galePut.indexOf(parseInt(active))
+        //     galePut.splice(index, 1)
+        // }
     } else if (profitAmount == 0) {
         console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`.red)
         notify('Empate', `Empate ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`);
