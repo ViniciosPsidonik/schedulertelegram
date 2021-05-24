@@ -102,7 +102,7 @@ const scheduleTrades = msg => {
                 }
             }
             
-            let msgSpace = messagesArray.split('/n')
+            let msgSpace = messagesArray.split('\n')
             for (let index1 = 0; index1 < msgSpace.length; index1++) {
                 const element = msgSpace[index1].replace('\n','').split(' ');
                 
@@ -147,7 +147,7 @@ function startListener() {
         let { updates } = update
         for (let index = 0; index < updates.length; index++) {
             const update = updates[index];
-            console.log(updates);
+            // console.log(updates);
             if (update && update.message) {
                 const message = update.message.message
                 console.log(message);
