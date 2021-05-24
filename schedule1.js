@@ -136,7 +136,7 @@ const verifyObj = (array, obj) => {
     }
     return false
 }
-
+let stopp = false
 function startListener() {
     console.log('[+] starting listener')
     mtproto.updates.on('updates', (update) => {
@@ -153,7 +153,7 @@ function startListener() {
         }
     });
 
-    console.log(mtproto.channels);
+    // console.log(mtproto.channels);
 
     // mtproto.updates.on('updateShortMessage', (updates) => {
     //     console.log(updates);
