@@ -104,7 +104,7 @@ const scheduleTrades = msg => {
             
             let msgSpace = messagesArray.split('/n')
             for (let index1 = 0; index1 < msgSpace.length; index1++) {
-                const element = msgSpace[index1].split(' ');
+                const element = msgSpace[index1].replace('\n','').split(' ');
                 
                 console.log(msgSpace);
     
