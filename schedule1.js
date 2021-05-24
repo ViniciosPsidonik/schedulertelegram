@@ -327,7 +327,7 @@ let positionOpenedGale = false
 let binarias = 1
 let binariasTimes = "M1,M5"
 let digital = 1
-let digitalTimes = "M1,M5"
+let digitalTimes = "M1,M5,M15"
 let payout = 0
 
 let winsCount = 0
