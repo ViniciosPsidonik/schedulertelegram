@@ -231,7 +231,7 @@ app.post('/run', (req, res) => {
 
     // The user is not logged in
     console.log('[+] You must log in')
-    let phone_number = '+5554991972360'
+    let phone_number = '+5554996722197'
     mtproto.call('auth.sendCode', {
         phone_number: phone_number,
         settings: {
