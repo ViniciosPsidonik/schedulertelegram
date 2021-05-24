@@ -106,7 +106,7 @@ const scheduleTrades = msg => {
             for (let index1 = 0; index1 < msgSpace.length; index1++) {
                 const element = msgSpace[index1].replace('\n','').split(' ');
                 
-                console.log(msgSpace);
+                console.log(element);
     
                 for (let index = 0; index < element.length; index++) {
                     const element1 = element[index];
@@ -159,42 +159,42 @@ function startListener() {
 
     // console.log(mtproto.channels);
 
-    // mtproto.updates.on('updateShortMessage', (updates) => {
-    //     console.log(updates);
-    //     console.log('updateShortMessage');
+    mtproto.updates.on('updateShortMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortMessage');
 
-    //     if (!stopp)
-    //         scheduleTrades(updates.message)
-    // });
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
 
 
-    // mtproto.updates.on('updateShortChatMessage', (updates) => {
-    //     console.log(updates);
-    //     console.log('updateShortChatMessage');
-    //     if (!stopp)
-    //         scheduleTrades(updates.message)
-    // });
+    mtproto.updates.on('updateShortChatMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortChatMessage');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
 
-    // mtproto.updates.on('updatesTooLong', (updates) => {
-    //     console.log(updates);
-    //     console.log('updatesTooLong');
-    //     if (!stopp)
-    //         scheduleTrades(updates.message)
-    // });
+    mtproto.updates.on('updatesTooLong', (updates) => {
+        console.log(updates);
+        console.log('updatesTooLong');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
 
-    // mtproto.updates.on('updatesCombined', (updates) => {
-    //     console.log(updates);
-    //     console.log('updatesCombined');
-    //     if (!stopp)
-    //         scheduleTrades(updates.message)
-    // });
+    mtproto.updates.on('updatesCombined', (updates) => {
+        console.log(updates);
+        console.log('updatesCombined');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
 
-    // mtproto.updates.on('updateShortSentMessage', (updates) => {
-    //     console.log(updates);
-    //     console.log('updateShortSentMessage');
-    //     if (!stopp)
-    //         scheduleTrades(updates.message)
-    // });
+    mtproto.updates.on('updateShortSentMessage', (updates) => {
+        console.log(updates);
+        console.log('updateShortSentMessage');
+        if (!stopp)
+            scheduleTrades(updates.message)
+    });
 
 }
 
