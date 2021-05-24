@@ -325,9 +325,9 @@ let ssid
 let positionOpenedSoros = false
 let positionOpenedGale = false
 let binarias = 1
-let binariasTimes = "M1"
+let binariasTimes = "M1,M5"
 let digital = 1
-let digitalTimes = "M1"
+let digitalTimes = "M1,M5"
 let payout = 0
 
 let winsCount = 0
@@ -518,26 +518,6 @@ const onMessage = e => {
 
         if (message.name == 'position-changed') {
             positionChangedStuff(message)
-        }
-
-        if (message.name == "live-deal-binary-option-placed") {
-            if (message.msg.option_type == 'turbo') {
-                if (!runningActives.includes(message.msg.active_id))
-                    runningActives.push(message.msg.active_id)
-            } else {
-                if (!runningActivesBinary.includes(message.msg.active_id))
-                    runningActivesBinary.push(message.msg.active_id)
-            }
-        }
-
-        if (message.name == "live-deal-digital-option") {
-            if (message.msg.expiration_type == 'PT1M') {
-                if (!runningActivesDigital.includes(message.msg.instrument_active_id))
-                    runningActivesDigital.push(message.msg.instrument_active_id)
-            } else {
-                if (!runningActivesDigitalFive.includes(message.msg.instrument_active_id))
-                    runningActivesDigitalFive.push(message.msg.instrument_active_id)
-            }
         }
 
         if (message.name == 'heartbeat') {
