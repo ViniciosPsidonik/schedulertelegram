@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
     res.status(200).send('Helooou')
 })
 
-const api_id = 1537314 // insert api_id here
-const api_hash = '1855b411a187811b71f333d904d725d9'; // insert api_hash here
+const api_id = 5714815 // insert api_id here
+const api_hash = 'ec420ec9398e2b0577dcfa5f47b09f5d'; // insert api_hash here
 
 let config
 let code
@@ -83,8 +83,42 @@ let otc = false
 const scheduleTrades = msg => {
     if (msg) {
         let messagesArray = msg.toString()
-        if (messagesArray.toUpperCase().includes('PUT') || messagesArray.toUpperCase().includes('CALL')) {
-            schedules.push(messagesArray)
+        if (messagesArray.toUpperCase().includes('SINAIS POR TEMPO')) {
+
+            let direction
+            let time
+            let parInt
+
+            if(msg.includes('PUT')){
+                direction = 'put'
+            } else {
+                direction = 'call'
+            }
+
+
+            for (var [key, value] of activesMapString.entries()) {
+                if(messagesArray.replace('/', '').includes(key)){
+                    parInt = value
+                }
+            }
+            
+            let msgSpace = messagesArray.split('/n').split(' ')
+
+            console.log(msgSpace);
+
+            for (let index = 0; index < msgSpace.length; index++) {
+                const element = msgSpace[index];
+                if(element.includes(':')){
+                    time = element.replace('h','')
+                    break
+                }
+            }
+
+            schedules.push({
+                parInt,
+                direction,
+                time
+            })
             console.log(schedules);
             console.log(schedules.length);
         }
@@ -407,6 +441,7 @@ setInterval(() => {
 
 let currentTime
 let currentTimemmssDate
+let currentTimehhmmss
 let currentTimemmss
 let buysss = []
 
@@ -500,22 +535,24 @@ const onMessage = e => {
 
         if (message.name == 'heartbeat') {
             currentTime = message.msg
-            currentTimemmss = moment.unix(currentTime / 1000).utcOffset(-3).add(3, 's').format("HH:mm")
-            currentTimemmssDate = moment.unix(currentTime / 1000).utcOffset(-3).add(3, 's').format("YYYY-MM-DD HH:mm:ss")
+            currentTimemmss = moment.unix(currentTime / 1000).utcOffset(-3).add(2, 's').format("HH:mm")
+            currentTimemmssDate = moment.unix(currentTime / 1000).utcOffset(-3).add(2, 's').format("YYYY-MM-DD HH:mm:ss")
+            currentTimehhmmss = moment.unix(currentTime / 1000).utcOffset(-3).add(2, 'seconds').format("HH:mm:ss")
             if (log)
                 console.log(currentTimemmssDate)
 
         }
+
         if (schedules.length > 0)
             for (let index = 0; index < schedules.length; index++) {
                 const element = schedules[index]
                 if (element) {
-                    let hourmm = element.substring(element.length - 5, element.length)
+                    let hourmm = element.time
                     // console.log(hourmm);
                     if (currentTimemmss && currentTimemmss.includes(hourmm)) {
-                        const timeFrame = getTimeFrame(element)
-                        const active = getActiveFor(element)
-                        const direction = getDirection(element).toLowerCase()
+                        const active = element.parInt
+                        const direction = element.direction
+                        const timeFrame = 5
                         const moment5 = moment(moment().format("YYYY-MM-DD ") + hourmm).utcOffset(0).add(timeFrame, 'm').add(3, 'h').format('X')
                         if (timeFrame && active && direction && moment5) {
                             let turboPayout
@@ -531,7 +568,7 @@ const onMessage = e => {
                                 }
                             }
 
-                            console.log(`M${timeFrame} / ${direction} / ${getActiveString(active, activesMapString)} / ${amount} / ${currentTimemmssDate}`);
+                            console.log(`${currentTimehhmmss} || ${direction} / ${getActiveString(parInt, activesMapString)} / ${amount}`);
 
                             if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
                                 buy(amount, active, direction, parseInt(moment5), timeFrame == 1 ? "PT1M" : "PT5M")
@@ -598,116 +635,78 @@ const getActiveFor = (msg) => {
 
 function optionClosed(message) {
 
+    let amounth = buysss[0] && buysss[0].amount ? buysss[0].amount : amount
     let active = message.msg.active_id
+    let direction = message.msg.direction
 
-    for (let index = 0; index < buysss.length; index++) {
-        const element = buysss[index];
+    profitAmount = message.msg.profit_amount - amounth
+    sessionBalance += profitAmount
 
-        let profitAmount
-        if (element.id == `${active}/${message.msg.expiration_time}` && (!element.galeLevel || element.galeLevel < element.gale)) {
-            profitAmount = message.msg.profit_amount - element.amount
-            sessionBalance += profitAmount
-            let turboPayout
-            let digitalPayout
-            let payoutt = 0
-            if (payoutMap.has('turbo')) {
-                if (payoutMap.get('turbo').has(active)) {
-                    turboPayout = payoutMap.get('turbo').get(active)
+    if (profitAmount < 0) {
+
+        console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`.red)
+        notify('Loss', `${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`);
+
+            if (gale)
+                if (amount == amountInitial) {
+                    // if (!galePut.includes(active)) {
+                    amount *= 2
+                } else {
+                    amount = amountInitial
                 }
-            }
-            if (payoutMap.has('digital')) {
-                if (payoutMap.get('digital').has(active)) {
-                    digitalPayout = payoutMap.get('digital').get(active)
-                }
-            }
+            // } else {
+            //     let index = galePut.indexOf(parseInt(active))
+            //     galePut.splice(index, 1)
+            // }
+    } else if (profitAmount == 0) {
+        console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`.red)
+        notify('Empate', `Empate ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`);
+    } else {
+        // if (amount != amountInitial) {
+        //     amount = amountInitial
+        // } else {
+        //     amount += profitAmount
+        // }
 
-            if (digitalPayout && turboPayout && digitalPayout > turboPayout) {
-                payoutt = digitalPayout / 100
-            } else if (digitalPayout && turboPayout && digitalPayout <= turboPayout) {
-                payoutt = turboPayout / 100
-            }
 
-            if (profitAmount < 0) {
-                stopp = true
-                if (profitAmount < 0)
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-                else
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-
-            } else {
-                winsCount++
-                amount = message.msg.profit_amount
-                console.log(amount);
-                buysss.splice(index, 1);
-                index--
-                if (profitAmount < 0)
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-                else
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-
-                if (winsCount >= 2) {
-                    stopp = true
-                }
-
-            }
-            break
-        } else if (element.id == `${active}/${message.msg.expiration_time}`) {
-            profitAmount = message.msg.profit_amount - element.amount
-            sessionBalance += profitAmount
-            buysss.splice(index, 1);
-            index--
-            if (profitAmount < 0)
-                console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-            else
-                console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-        }
+        console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`.green)
+        notify('Wiiin!!', `${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario`);
     }
+    positionOpenedSoros = false
 }
 
 
 function positionChangedStuff(message) {
     if (message.msg.status == 'closed') {
+
+        let id = message.msg.id
+        let direction = message.msg.raw_event.instrument_dir
+        buysCount.set(message.msg.active_id, buysCount.get(message.msg.active_id) - 1)
+
+        if (soros)
+            positionOpenedSoros = false
+        if (gale)
+            positionOpenedGale = false
+
+        let profitAmount = message.msg.close_profit ? message.msg.close_profit - amount : amount * -1
         let active = message.msg.active_id
+        sessionBalance += profitAmount
 
-        for (let index = 0; index < buysss.length; index++) {
-            const element = buysss[index];
-            if (element.id == `${active}/${message.msg.raw_event.instrument_expiration / 1000}` && (!element.galeLevel || element.galeLevel < element.gale)) {
-                let profitAmount = message.msg.close_profit ? message.msg.close_profit - element.amount : element.amount * -1
-                sessionBalance += profitAmount
+        if (profitAmount < 0) {
 
-                if (profitAmount < 0) {
-                    stopp = true
-                    if (profitAmount < 0)
-                        console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
-                    else
-                        console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
+            console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`.red)
+            notify('Loss', `${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`);
 
-                } else {
-                    amount = message.msg.close_profit
-                    winsCount++
-                    buysss.splice(index, 1);
-                    index--
-                    if (profitAmount < 0)
-                        console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
-                    else
-                        console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / DIGITAL / ${currentTimemmssDate}`)
-                    if (winsCount >= 2) {
-                        stopp = true
-                    }
-
-                }
-                break
-            } else if (element.id == `${active}/${message.msg.raw_event.instrument_expiration / 1000}`) {
-                let profitAmount = message.msg.close_profit ? message.msg.close_profit - element.amount : element.amount * -1
-                sessionBalance += profitAmount
-                buysss.splice(index, 1);
-                index--
-                if (profitAmount < 0)
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-                else
-                    console.log(`=== ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Binario / ${currentTimemmssDate}`)
-            }
+        } else if (profitAmount == 0) {
+            console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`.red)
+            notify('Empate', `Empate ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`);
+        } else {
+            console.log(`${currentTimehhmmss} || ${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`.green)
+            notify('Wiiin!!', `${profitAmount < 0 ? "Loss" : "Win"} ${profitAmount.toFixed(2)} / Balance: ${parseFloat(sessionBalance.toFixed(2))} / ${getActiveString(active, activesMapString) ? getActiveString(active, activesMapString) : active} / Digital`);
         }
+        positionOpenedSoros = false
+    } else {
+
     }
 }
 
