@@ -102,17 +102,21 @@ const scheduleTrades = msg => {
                 }
             }
             
-            let msgSpace = messagesArray.split('/n').split(' ')
-
-            console.log(msgSpace);
-
-            for (let index = 0; index < msgSpace.length; index++) {
-                const element = msgSpace[index];
-                if(element.includes(':')){
-                    time = element.replace('h','')
-                    break
+            let msgSpace = messagesArray.split('/n')
+            for (let index1 = 0; index1 < array.length; index1++) {
+                const element = array[index1].split(' ');
+                
+                console.log(msgSpace);
+    
+                for (let index = 0; index < element.length; index++) {
+                    const element1 = element[index];
+                    if(element1.includes(':')){
+                        time = element1.replace('h','')
+                        break
+                    }
                 }
             }
+
 
             schedules.push({
                 parInt,
